@@ -1,0 +1,2 @@
+# ai-prompt-library
+团队内部AI提问词库，按项目分类
