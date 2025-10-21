@@ -32,3 +32,22 @@
    ## 记录人
   FullyYHC
 
+## 数据库表结构
+- devices表 ：包含device_id（自增主键）、dtu_sn（设备唯一标识符）、device_name等字段
+- alarms表 ：包含id（主键）、device_id（外键）、state、start、end、duration、updated等字段
+## 映射关系实现机制
+## 1. 1.同步流程 ：   
+   - 服务每60秒执行一次 sync_all_data 方法
+   - 首先通过 get_device_list 获取最新设备列表
+   - 使用 update_devices_table 更新devices表，采用REPLACE INTO语句，确保dtu_sn的唯一性
+   - 然后通过 get_today_device_lamp_data 获取当天设备灯数据（报警记录）
+   - 最后调用 update_alarms_table 更新警报表
+## 2. 2.device_id映射过程 ：   
+   - 在 update_alarms_table 方法中，首先执行SQL查询 SELECT dtu_sn, device_id FROM devices 获取完整的设备映射
+   - 然后构建字典 device_mapping = {row[0]: row[1] for row in cursor.fetchall()}
+   - 遍历IOT系统返回的数据时，使用数据中的dtuSn查找对应的device_id
+   - 确保每条报警记录都关联到正确的设备
+## 3. 3.数据一致性保障 ：   
+   - 每次同步都会先更新devices表，确保设备信息最新
+   - 只处理当天的数据（通过日期过滤），避免历史数据干扰
+   - 当找不到对应设备时，会记录警告日志并跳过该条记录
