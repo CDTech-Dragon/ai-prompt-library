@@ -34,3 +34,8 @@
 现问题了！.env.development中VITE_APP_BASE_API设置为'/dev-api'，但我们的API代理是直接使用'/api/ams-alarm'。让我修改index.vue，在API调用中添加配置跳过baseURL。
 
 ems_web\src\views\ams-alarm\index.vue
+### 记录日期
+2025-10-24 16：46
+
+### 记录人
+FullyYHC
